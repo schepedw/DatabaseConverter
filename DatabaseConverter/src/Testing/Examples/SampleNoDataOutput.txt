@@ -1,0 +1,699 @@
+-- MySQL dump 10.13  Distrib 5.5.29, for debian-linux-gnu (i686)
+--
+-- Host: localhost    Database: vcf_analyzer
+-- ------------------------------------------------------
+-- Server version	5.5.29-0ubuntu0.12.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `AC`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AC` (
+  `EntryId` bigint(20) NOT NULL,
+  `Count` int(11) NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `AC_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `AD`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AD` (
+  `IndID` bigint(11) NOT NULL,
+  `Depth1` int(11) DEFAULT NULL,
+  `Depth2` int(11) DEFAULT NULL,
+  `Depth3` int(11) DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `AD_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `AF`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AF` (
+  `EntryId` bigint(20) NOT NULL,
+  `Frequency` float NOT NULL,
+  KEY `EntryId` (`EntryId`),
+  CONSTRAINT `AF_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `AN`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AN` (
+  `EntryID` bigint(20) NOT NULL,
+  `AlleleNo` int(11) DEFAULT NULL,
+  KEY `EntryID` (`EntryID`),
+  CONSTRAINT `AN_ibfk_1` FOREIGN KEY (`EntryID`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Annotation`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Annotation` (
+  `AnnoID` int(11) NOT NULL AUTO_INCREMENT,
+  `Chromosome` varchar(25) NOT NULL,
+  `StartPosition` int(10) unsigned NOT NULL,
+  `EndPosition` int(10) unsigned NOT NULL,
+  `GeneName` varchar(25) NOT NULL,
+  `GeneDirection` char(1) NOT NULL,
+  `AnnoName` varchar(75) NOT NULL,
+  PRIMARY KEY (`AnnoID`)
+) ENGINE=InnoDB AUTO_INCREMENT=401 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `BaseQRankSum`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `BaseQRankSum` (
+  `EntryID` bigint(20) NOT NULL,
+  `ZScore` float DEFAULT NULL,
+  KEY `EntryID` (`EntryID`),
+  CONSTRAINT `BaseQRankSum_ibfk_1` FOREIGN KEY (`EntryID`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `DP`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `DP` (
+  `IndID` bigint(20) NOT NULL,
+  `ReadDepth` int(11) NOT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `DP_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `DS`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `DS` (
+  `EntryId` bigint(20) NOT NULL,
+  PRIMARY KEY (`EntryId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Dels`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Dels` (
+  `EntryId` bigint(20) NOT NULL,
+  `Deletions` float NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `Dels_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Divergence`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Divergence` (
+  `DivName` varchar(75) NOT NULL,
+  `DivId` int(11) NOT NULL AUTO_INCREMENT,
+  `Chromosome` varchar(25) NOT NULL,
+  `Position` int(11) NOT NULL,
+  `DivValue` tinyint(4) NOT NULL,
+  PRIMARY KEY (`DivId`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `EC`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `EC` (
+  `IndID` bigint(20) NOT NULL,
+  `Count1` int(11) DEFAULT NULL,
+  `Count2` int(11) DEFAULT NULL,
+  `Count3` int(11) DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `EC_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `FT`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `FT` (
+  `IndID` bigint(20) NOT NULL,
+  `Filter` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `FT_ibfk_2` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Filter`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Filter` (
+  `FilId` int(11) NOT NULL AUTO_INCREMENT,
+  `FilName` varchar(75) NOT NULL,
+  `FailureAllow` int(11) NOT NULL,
+  `PassExactly` int(11) NOT NULL,
+  PRIMARY KEY (`FilId`),
+  UNIQUE KEY `FilName` (`FilName`)
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `FilterEntry`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `FilterEntry` (
+  `FilEntId` int(11) NOT NULL AUTO_INCREMENT,
+  `FilId` int(11) NOT NULL,
+  `InfoName` varchar(25) NOT NULL,
+  `Comparison` tinyint(4) NOT NULL,
+  `Comparator` varchar(25) DEFAULT NULL,
+  `Comparator2` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`FilEntId`),
+  KEY `FilId` (`FilId`),
+  KEY `InfoName` (`InfoName`),
+  CONSTRAINT `FilterEntry_ibfk_1` FOREIGN KEY (`FilId`) REFERENCES `Filter` (`FilId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FilterEntry_ibfk_2` FOREIGN KEY (`InfoName`) REFERENCES `InfoTable` (`InfoName`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=235 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `FilterEntryPass`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `FilterEntryPass` (
+  `FilId` int(11) NOT NULL,
+  `EntryId` bigint(20) NOT NULL,
+  `Pass` tinyint(4) NOT NULL,
+  PRIMARY KEY (`FilId`,`EntryId`),
+  KEY `FilId` (`FilId`),
+  KEY `EntryId` (`EntryId`),
+  CONSTRAINT `FilterEntryPass_ibfk_3` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FilterEntryPass_ibfk_1` FOREIGN KEY (`FilId`) REFERENCES `Filter` (`FilId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `FilterIndividual`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `FilterIndividual` (
+  `FilIndId` int(11) NOT NULL AUTO_INCREMENT,
+  `FilId` int(11) NOT NULL,
+  `GenoName` varchar(5) NOT NULL,
+  `Comparison` tinyint(4) NOT NULL,
+  `Comparator` varchar(25) DEFAULT NULL,
+  `Comparator2` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`FilIndId`),
+  KEY `GenoName` (`GenoName`),
+  KEY `FilId` (`FilId`),
+  CONSTRAINT `FilterIndividual_ibfk_1` FOREIGN KEY (`FilId`) REFERENCES `Filter` (`FilId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FilterIndividual_ibfk_2` FOREIGN KEY (`GenoName`) REFERENCES `GenotypeTable` (`GenoName`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `FilterIndividualPass`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `FilterIndividualPass` (
+  `FilId` int(11) NOT NULL,
+  `IndID` bigint(20) NOT NULL,
+  `Pass` tinyint(4) NOT NULL,
+  PRIMARY KEY (`FilId`,`IndID`),
+  KEY `FilId` (`FilId`),
+  KEY `IndID` (`IndID`),
+  CONSTRAINT `FilterIndividualPass_ibfk_3` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FilterIndividualPass_ibfk_1` FOREIGN KEY (`FilId`) REFERENCES `Filter` (`FilId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GL`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GL` (
+  `IndID` bigint(20) NOT NULL,
+  `AA` float DEFAULT NULL,
+  `AB` float DEFAULT NULL,
+  `BB` float DEFAULT NULL,
+  `AC` float DEFAULT NULL,
+  `BC` float DEFAULT NULL,
+  `CC` float DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `GL_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GLE`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GLE` (
+  `IndID` bigint(20) NOT NULL,
+  `0` float DEFAULT NULL,
+  `1` float DEFAULT NULL,
+  `0/0` float DEFAULT NULL,
+  `0/1` float DEFAULT NULL,
+  `1/1` float DEFAULT NULL,
+  `0/0/0` float DEFAULT NULL,
+  `0/0/1` float DEFAULT NULL,
+  `0/1/1` float DEFAULT NULL,
+  `1/1/1` float DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `GLE_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GP`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GP` (
+  `IndID` bigint(20) NOT NULL,
+  `Prob1` float DEFAULT NULL,
+  `Prob2` float DEFAULT NULL,
+  `Prob3` float DEFAULT NULL,
+  `Prob4` float DEFAULT NULL,
+  `Prob5` float DEFAULT NULL,
+  `Prob6` float DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `GP_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GQ`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GQ` (
+  `IndID` bigint(20) NOT NULL,
+  `Quality` int(11) NOT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `GQ_ibfk_2` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GT`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GT` (
+  `IndID` bigint(20) NOT NULL,
+  `Allele1` tinyint(3) unsigned DEFAULT NULL,
+  `Phase1` tinyint(3) unsigned DEFAULT NULL,
+  `Allele2` tinyint(3) unsigned DEFAULT NULL,
+  `Phase2` tinyint(3) unsigned DEFAULT NULL,
+  `Allele3` tinyint(3) unsigned DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `GT_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `GenotypeTable`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GenotypeTable` (
+  `GenoName` varchar(5) NOT NULL,
+  `Description` varchar(150) DEFAULT NULL,
+  `Type` tinyint(4) DEFAULT NULL,
+  `Count` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`GenoName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `HP`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `HP` (
+  `IndID` bigint(20) NOT NULL,
+  `val0` float DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `HP_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `HQ`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `HQ` (
+  `IndID` bigint(20) NOT NULL,
+  `Haplo1` int(11) NOT NULL,
+  `Haplo2` int(11) NOT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `HQ_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `HRun`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `HRun` (
+  `EntryId` bigint(20) NOT NULL,
+  `Run` int(11) NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `HRun_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `HaplotypeScore`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `HaplotypeScore` (
+  `EntryId` bigint(20) NOT NULL,
+  `Consistency` float NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `HaplotypeScore_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `IndividualEntry`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `IndividualEntry` (
+  `IndID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `EntryId` bigint(20) NOT NULL,
+  `IndNoVcf` int(11) NOT NULL,
+  PRIMARY KEY (`IndID`),
+  KEY `EntryId` (`EntryId`),
+  CONSTRAINT `IndividualEntry_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14885 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `InfoTable`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `InfoTable` (
+  `InfoName` varchar(25) NOT NULL,
+  `Type` tinyint(4) DEFAULT NULL,
+  `Count` tinyint(4) DEFAULT NULL,
+  `Description` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`InfoName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `MQ`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `MQ` (
+  `EntryId` bigint(20) NOT NULL,
+  `Rms` float NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `MQ_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `MQ0`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `MQ0` (
+  `EntryId` bigint(20) NOT NULL,
+  `ZeroReads` int(11) NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `MQ0_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `MQRankSum`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `MQRankSum` (
+  `EntryId` bigint(20) NOT NULL,
+  `ZScore` float NOT NULL,
+  KEY `EntryId` (`EntryId`),
+  CONSTRAINT `MQRankSum_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `PL`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `PL` (
+  `IndID` bigint(20) NOT NULL,
+  `Likely1` int(11) DEFAULT NULL,
+  `Likely2` int(11) DEFAULT NULL,
+  `Likely3` int(11) DEFAULT NULL,
+  `Likely4` int(11) DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `PL_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `PQ`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `PQ` (
+  `IndID` bigint(20) NOT NULL,
+  `Quality` int(11) DEFAULT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `PQ_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `PS`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `PS` (
+  `IndID` bigint(20) NOT NULL,
+  `Set` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`IndID`),
+  CONSTRAINT `PS_ibfk_1` FOREIGN KEY (`IndID`) REFERENCES `IndividualEntry` (`IndID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `QD`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `QD` (
+  `EntryId` bigint(20) NOT NULL,
+  `Quality` float NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `QD_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ReadPosRankSum`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ReadPosRankSum` (
+  `EntryId` bigint(20) NOT NULL,
+  `ZScore` float NOT NULL,
+  KEY `EntryId` (`EntryId`),
+  CONSTRAINT `ReadPosRankSum_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `SB`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `SB` (
+  `EntryId` bigint(20) NOT NULL,
+  `Bias` float NOT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `SB_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Vcf`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Vcf` (
+  `VcfId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `VcfName` varchar(75) NOT NULL,
+  PRIMARY KEY (`VcfId`)
+) ENGINE=InnoDB AUTO_INCREMENT=170 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VcfEntry`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VcfEntry` (
+  `EntryId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `VcfId` bigint(20) DEFAULT NULL,
+  `Chrom` varchar(25) DEFAULT NULL,
+  `Pos` int(10) unsigned DEFAULT NULL,
+  `Id` varchar(25) DEFAULT NULL,
+  `Ref` varchar(10) DEFAULT NULL,
+  `Alt` varchar(10) DEFAULT NULL,
+  `Qual` float DEFAULT NULL,
+  `Filter` varchar(25) DEFAULT NULL,
+  `Format` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`EntryId`),
+  KEY `VcfId` (`VcfId`),
+  CONSTRAINT `VcfEntry_ibfk_1` FOREIGN KEY (`VcfId`) REFERENCES `Vcf` (`VcfId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2611 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VcfHeader`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VcfHeader` (
+  `VcfId` bigint(20) NOT NULL,
+  `Header` text NOT NULL,
+  PRIMARY KEY (`VcfId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VcfIndividual`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VcfIndividual` (
+  `VcfId` bigint(20) NOT NULL,
+  `IndNoVcf` int(11) NOT NULL,
+  `IndName` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`VcfId`,`IndNoVcf`),
+  CONSTRAINT `VcfIndividual_ibfk_1` FOREIGN KEY (`VcfId`) REFERENCES `Vcf` (`VcfId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `aksdjfa`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `aksdjfa` (
+  `EntryId` bigint(20) NOT NULL,
+  `val0` int(11) DEFAULT NULL,
+  PRIMARY KEY (`EntryId`),
+  CONSTRAINT `aksdjfa_ibfk_1` FOREIGN KEY (`EntryId`) REFERENCES `VcfEntry` (`EntryId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2013-04-17 20:19:09
