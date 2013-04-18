@@ -13,7 +13,7 @@ public class Column<T> {
 	
 	private String name;
 	private ArrayList<Entry<T>> entries;
-	public Column (String name){
+	public Column (String name) {
 		this.entries=new ArrayList<Entry<T>>();
 		this.name=name;
 	}
