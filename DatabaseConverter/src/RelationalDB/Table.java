@@ -12,24 +12,34 @@ public class Table {
 
 	private String name;
 	private ArrayList<Column> columns;
-	private HashMap<Table, ArrayList<Column>> foreignKeys;
+	private HashMap<Column, HashMap<Table, Column>> foreignKeys;
+	private ArrayList<Column> primaryKeys;
 
 	public Table(String name) {
-		this.foreignKeys = new HashMap<Table, ArrayList<Column>>();
+		this.foreignKeys = new HashMap<Column, HashMap<Table, Column>>();
+		this.primaryKeys=new ArrayList<Column>();
 		this.columns = new ArrayList<Column>();
 		this.name = name;
 	}
 
-	protected void addTable(Column c) {
+	public void addColumn(Column c) {
 		this.columns.add(c);
 	}
-
-	protected Column getTable(Column c) {
-		int i = this.columns.indexOf(c);
-		return this.columns.get(i);
+	public void addPrimaryKeyByColumnName(String name) throws Exception{
+		Column c=getColumnByName(name);
+		this.primaryKeys.add(c);			
+	}
+	
+	protected Column getColumnByName(String name) throws Exception {
+		for (Column c: this.columns){
+			if (c.getName().equals(name)){
+				return c;
+			}
+		}
+		throw new Exception("Column "+ name+" does not exist in table "+ getName());
 	}
 
-	protected Boolean removeTable(Column c) {
+	protected Boolean removeColumn(Column c) {
 		return this.columns.remove(c);
 	}
 
@@ -51,4 +61,9 @@ public class Table {
 	protected ArrayList<Column> getForeignKeys(Table t){
 		return this.foreignKeys.get(t);
 	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
 }

@@ -24,9 +24,13 @@ public class Database {
 		this.tables.add(t);
 	}
 	
-	protected Table getTable(Table t){
-		int i =this.tables.indexOf(t);
-		return this.tables.get(i);
+	public Table getTableByTableName(String name) throws Exception{
+		for (Table t: this.tables){
+			if (t.getName().equals(name)){
+				return t;
+			}
+		}
+		throw new Exception("Column "+ name+" does not exist in table "+ getName());
 	}
 	
 	protected Boolean removeTable(Table t){
@@ -35,6 +39,10 @@ public class Database {
 	
 	protected int getNumTables(){
 		return this.tables.size();
+	}
+	
+	protected String getName(){
+		return this.name;
 	}
 	
 }

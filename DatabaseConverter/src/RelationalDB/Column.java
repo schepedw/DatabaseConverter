@@ -31,6 +31,10 @@ public class Column<T> {
 		return this.entries.remove(e);
 	}
 	
+	public String getName(){
+		return this.name;
+	}
+	
 	protected int getNumEntries(){
 		return this.entries.size();
 	}
