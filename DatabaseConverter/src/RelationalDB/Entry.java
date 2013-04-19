@@ -1,11 +1,5 @@
 package RelationalDB;
 
-/**
- * TODO Put here a description of what this class does.
- *
- * @author schepedw.
- *         Created Apr 17, 2013.
- */
 public class Entry<T> {
 	private T data;
 	private Boolean nullable;
@@ -14,6 +8,10 @@ public class Entry<T> {
 	}
 	protected T getData(){
 		return this.data;
+	}
+	
+	Boolean getNullable() {
+		return this.nullable;
 	}
 	
 	

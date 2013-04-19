@@ -1,30 +1,43 @@
 package Testing.Examples;
 
-
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-import Converter.DataParser;
+import Converter.SchemaParser;
+import RelationalDB.Column;
 import RelationalDB.Database;
+import RelationalDB.ForeignKey;
+import RelationalDB.Table;
 
-/**
- * TODO Put here a description of what this class does.
- *
- * @author schepedw.
- *         Created Apr 17, 2013.
- */
 public class ParserTest {
 
 	@Test
-	public void testGetName() throws FileNotFoundException {
-		File ex=new File("src/Testing/Examples/SampleNoDataOutput.txt");
-		//String name= DataParser.getName(ex);
-		Database db= DataParser.parse(ex);
-		//assertEquals("vcf_analyzer",name);
+	public void testGetName() throws Exception {
+		File ex = new File("src/Testing/Examples/SampleNoDataOutput.txt");
+		SchemaParser dp = new SchemaParser(ex);
+		Database db = dp.parse();
+		printHierarchy(db);
 	}
 
+	public void printHierarchy(Database db) {
+		System.out.println("Database name: " + db.getName());
+		for (Table table : db.getTables()) {
+			System.out.println("   Table name: " + table.getName());
+			for (Column<?> pk : table.getPrimaryKeys()) {
+				System.out.println("      Primary key: " + pk.getName());
+			}
+			for (Column<?> column : table.getColumns()) {
+				if (!table.getPrimaryKeys().contains(column)) {
+					System.out.println("      " + column.getName());
+				}
+			}
+			for (ForeignKey key : table.getForeignKeys()) {
+				String column = key.getColumn().getName();
+				String kTable = key.getKeyTable();
+				String kColumn = key.getKeyColumn();
+				System.out.println(String.format("      FK from %s to %s.%s", column, kTable, kColumn));
+			}
+		}
+	}
 }

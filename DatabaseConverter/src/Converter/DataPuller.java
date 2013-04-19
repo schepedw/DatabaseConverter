@@ -19,36 +19,35 @@ public class DataPuller {
 
 	// When we actually convert the data, we may want to pull the schema and
 	// data at the same time
-	protected String pullSchema(){
-		String result="";
-		String error="";
-		try{
+	protected String pullSchema() {
+		String result = "";
+		try {
 			String s;
-			String pullCommand="mysqldump -p --no-data --skip-add-drop-table "+this.targetDB;
-			Process p =Runtime.getRuntime().exec(pullCommand);
-			
-			BufferedReader stdInput = new BufferedReader(new 
-	                 InputStreamReader(p.getInputStream()));
+			String pullCommand = "mysqldump -p --no-data --skip-add-drop-table "
+					+ this.targetDB;
+			Process p = Runtime.getRuntime().exec(pullCommand);
 
-			BufferedReader stdError = new BufferedReader(new 
-	                 InputStreamReader(p.getErrorStream()));
-			
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+
+			BufferedReader stdError = new BufferedReader(new InputStreamReader(
+					p.getErrorStream()));
+
 			while ((s = stdInput.readLine()) != null) {
-	                System.out.println(s);
-	                result+=s;
-	            }
-	            
-			System.out.println("Here is the standard error of the command (if any):\n");
+				System.out.println(s);
+				result += s;
+			}
+
+			System.out
+					.println("Here is the standard error of the command (if any):\n");
 			while ((s = stdError.readLine()) != null) {
 				System.out.println(s);
-				error+=s;
 			}
+		} catch (IOException e) {
+			System.out.println("exception: ");
+			e.printStackTrace();
+			System.exit(-1);
 		}
-		catch (IOException e) {
-            System.out.println("exception: ");
-            e.printStackTrace();
-            System.exit(-1);
-        }
 		return result;
 	}
 }

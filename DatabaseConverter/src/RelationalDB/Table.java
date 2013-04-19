@@ -1,45 +1,56 @@
 package RelationalDB;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-/**
- * TODO Put here a description of what this class does.
- * 
- * @author schepedw. Created Apr 17, 2013.
- */
 public class Table {
 
 	private String name;
-	private ArrayList<Column> columns;
-	private HashMap<Column, HashMap<Table, Column>> foreignKeys;
-	private ArrayList<Column> primaryKeys;
+	private ArrayList<Column<?>> columns;
+	private ArrayList<ForeignKey> foreignKeys;
+	private ArrayList<Column<?>> primaryKeys;
 
 	public Table(String name) {
-		this.foreignKeys = new HashMap<Column, HashMap<Table, Column>>();
-		this.primaryKeys=new ArrayList<Column>();
-		this.columns = new ArrayList<Column>();
+		this();
 		this.name = name;
 	}
+	
+	public Table() {
+		this.foreignKeys = new ArrayList<ForeignKey>();
+		this.primaryKeys = new ArrayList<Column<?>>();
+		this.columns = new ArrayList<Column<?>>();
+	}
 
-	public void addColumn(Column c) {
+	public void addColumn(Column<?> c) {
 		this.columns.add(c);
 	}
-	public void addPrimaryKeyByColumnName(String name) throws Exception{
-		Column c=getColumnByName(name);
-		this.primaryKeys.add(c);			
+	
+	public ArrayList<Column<?>> getColumns() {
+		return this.columns;
 	}
 	
-	protected Column getColumnByName(String name) throws Exception {
-		for (Column c: this.columns){
-			if (c.getName().equals(name)){
+	public ArrayList<Column<?>> getPrimaryKeys() {
+		return this.primaryKeys;
+	}
+	
+	public ArrayList<ForeignKey> getForeignKeys() {
+		return this.foreignKeys;
+	}
+
+	public void addPrimaryKeyByColumnName(String name) throws Exception {
+		Column<?> c = getColumnByName(name);
+		this.primaryKeys.add(c);
+	}
+
+	protected Column<?> getColumnByName(String name) throws Exception {
+		for (Column<?> c : this.columns) {
+			if (c.getName().equals(name)) {
 				return c;
 			}
 		}
-		throw new Exception("Column "+ name+" does not exist in table "+ getName());
+		throw new Exception("Column " + name + " does not exist in table " + getName());
 	}
 
-	protected Boolean removeColumn(Column c) {
+	protected Boolean removeColumn(Column<?> c) {
 		return this.columns.remove(c);
 	}
 
@@ -47,23 +58,23 @@ public class Table {
 		return this.columns.size();
 	}
 
-	protected void addForeignKey(Table t, Column c) {
-		ArrayList<Column> keyList;
-		if (this.foreignKeys.get(t) == null) {
-			keyList = new ArrayList<Column>();
+	public void addForeignKey(String columnName, String keyTable, String keyColumn) throws Exception {
+		ArrayList<ForeignKey> keyList;
+		if (this.foreignKeys == null) {
+			keyList = new ArrayList<ForeignKey>();
 		} else {
-			keyList = this.foreignKeys.get(t);
+			keyList = this.foreignKeys;
 		}
-		keyList.add(c);
-		this.foreignKeys.put(t, keyList);
+		Column<?> column = getColumnByName(columnName);
+		keyList.add(new ForeignKey(column, keyTable, keyColumn));
 	}
-	
-	protected ArrayList<Column> getForeignKeys(Table t){
-		return this.foreignKeys.get(t);
+
+	protected ArrayList<ForeignKey> getForeignKeys(Table t) {
+		return this.foreignKeys;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return this.name;
 	}
-	
+
 }
