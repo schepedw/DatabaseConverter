@@ -34,8 +34,8 @@ public class ParserTest {
 			}
 			for (ForeignKey key : table.getForeignKeys()) {
 				String column = key.getColumn().getName();
-				String kTable = key.getKeyTable();
-				String kColumn = key.getKeyColumn();
+				String kTable = key.getKeyTable().getName();
+				String kColumn = key.getKeyColumn().getName();
 				System.out.println(String.format("      FK from %s to %s.%s", column, kTable, kColumn));
 			}
 		}

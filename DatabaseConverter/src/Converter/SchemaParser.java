@@ -30,7 +30,9 @@ public class SchemaParser {
 			
 			if (line.contains("CREATE TABLE")) {
 				currentTable = addTable(line);
-				db.addTable(currentTable);
+				if (currentTable != null) {
+					db.addTable(currentTable);
+				}
 				insideTable = true;
 				line = input.nextLine();
 			}
@@ -52,12 +54,28 @@ public class SchemaParser {
 		input.close();
 		return this.db;
 	}
+	
+	private boolean tableExists(String tableName) {
+		if (db.getTableByTableName(tableName) == null) {
+			return false;
+		}
+		return true;
+	}
 
 	private boolean containsSpecialFlag(String line, Table table)
 			throws Exception {
 		if (line.contains("CONSTRAINT")) {
 			String[] foreignKey = extractForeignKey(line);
-			table.addForeignKey(foreignKey[0], foreignKey[1], foreignKey[2]);
+			if (!tableExists(foreignKey[1])) {
+				Table newTable = new Table(foreignKey[1]);
+				newTable.addColumn(new Column<>(foreignKey[2]));
+				db.addTable(newTable);
+			}
+			Column<?> column = table.getColumnByName(foreignKey[0]);
+			Table keyTable = db.getTableByTableName(foreignKey[1]);
+			Column<?> keyColumn = keyTable.getColumnByName(foreignKey[2]);
+			table.addForeignKey(column, keyTable, keyColumn);
+			
 			return true;
 		} else if (line.contains("PRIMARY KEY")) {
 			parsePrimaryKey(table, line);
@@ -86,7 +104,6 @@ public class SchemaParser {
 
 		} else if (type.equals("String")) {
 			c = new Column<String>(columnName);
-
 		}
 		table.addColumn(c);
 		return c;
@@ -122,8 +139,12 @@ public class SchemaParser {
 
 	private Table addTable(String line) {
 		String tableName = line.split("`")[1];
-		Table table = new Table(tableName);
-		return table;
+		if (!tableExists(tableName)) {
+			Table table = new Table(tableName);
+			return table;
+		} else { 
+			return db.getTableByTableName(tableName);
+		}
 	}
 
 	public String getName() throws FileNotFoundException {

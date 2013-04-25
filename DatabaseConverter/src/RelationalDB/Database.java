@@ -20,14 +20,13 @@ public class Database {
 		return this.tables;
 	}
 
-	public Table getTableByTableName(String name) throws Exception {
+	public Table getTableByTableName(String name) {
 		for (Table t : this.tables) {
 			if (t.getName().equals(name)) {
 				return t;
 			}
 		}
-		throw new Exception("Column " + name + " does not exist in table "
-				+ getName());
+		return null;
 	}
 
 	protected Boolean removeTable(Table t) {

@@ -41,7 +41,7 @@ public class Table {
 		this.primaryKeys.add(c);
 	}
 
-	protected Column<?> getColumnByName(String name) throws Exception {
+	public Column<?> getColumnByName(String name) throws Exception {
 		for (Column<?> c : this.columns) {
 			if (c.getName().equals(name)) {
 				return c;
@@ -58,14 +58,13 @@ public class Table {
 		return this.columns.size();
 	}
 
-	public void addForeignKey(String columnName, String keyTable, String keyColumn) throws Exception {
+	public void addForeignKey(Column<?> column, Table keyTable, Column<?> keyColumn) throws Exception {
 		ArrayList<ForeignKey> keyList;
 		if (this.foreignKeys == null) {
 			keyList = new ArrayList<ForeignKey>();
 		} else {
 			keyList = this.foreignKeys;
 		}
-		Column<?> column = getColumnByName(columnName);
 		keyList.add(new ForeignKey(column, keyTable, keyColumn));
 	}
 

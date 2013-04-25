@@ -2,13 +2,13 @@ package RelationalDB;
 
 public class ForeignKey {
 	private Column<?> column;
-	private String keyTable;
-	private String keyColumn;
+	private Table keyTable;
+	private Column<?> keyColumn;
 	
-	public ForeignKey(Column<?> column, String keyTable, String keyColumnName) throws Exception {
+	public ForeignKey(Column<?> column, Table keyTable, Column<?> keyColumn) throws Exception {
 		this.column = column;
 		this.keyTable = keyTable;
-		this.keyColumn = keyColumnName;
+		this.keyColumn = keyColumn;
 	}
 	
 	public Column<?> getColumn() {
@@ -18,19 +18,19 @@ public class ForeignKey {
 		this.column = column;
 	}
 
-	public String getKeyTable() {
+	public Table getKeyTable() {
 		return keyTable;
 	}
 
-	public void setKeyTable(String keyTable) {
+	public void setKeyTable(Table keyTable) {
 		this.keyTable = keyTable;
 	}
 
-	public String getKeyColumn() {
+	public Column<?> getKeyColumn() {
 		return keyColumn;
 	}
 
-	public void setKeyColumn(String keyColumn) {
+	public void setKeyColumn(Column<?> keyColumn) {
 		this.keyColumn = keyColumn;
 	}
 }
