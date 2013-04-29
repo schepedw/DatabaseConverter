@@ -68,12 +68,12 @@ public class SchemaParser {
 			String[] foreignKey = extractForeignKey(line);
 			if (!tableExists(foreignKey[1])) {
 				Table newTable = new Table(foreignKey[1]);
-				newTable.addColumn(new Column<>(foreignKey[2]));
+				newTable.addColumn(new Column(foreignKey[2]));
 				db.addTable(newTable);
 			}
-			Column<?> column = table.getColumnByName(foreignKey[0]);
+			Column column = table.getColumnByName(foreignKey[0]);
 			Table keyTable = db.getTableByTableName(foreignKey[1]);
-			Column<?> keyColumn = keyTable.getColumnByName(foreignKey[2]);
+			Column keyColumn = keyTable.getColumnByName(foreignKey[2]);
 			table.addForeignKey(column, keyTable, keyColumn);
 			
 			return true;
@@ -92,18 +92,18 @@ public class SchemaParser {
 		return foreignKey;
 	}
 
-	private Column<?> addColumn(Table table, String line) {
+	private Column addColumn(Table table, String line) {
 		String columnName = line.split("`")[1];
 		String type = getType(line);
-		Column<?> c = null;
+		Column c = null;
 		if (type.equals("int")) {
-			c = new Column<Integer>(columnName);
+			c = new Column(columnName);
 
 		} else if (type.equals("float")) {
-			c = new Column<Float>(columnName);
+			c = new Column(columnName);
 
 		} else if (type.equals("String")) {
-			c = new Column<String>(columnName);
+			c = new Column(columnName);
 		}
 		table.addColumn(c);
 		return c;
