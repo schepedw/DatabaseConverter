@@ -1,6 +1,7 @@
 package MongoDB;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import RelationalDB.Column;
 import RelationalDB.Database;
@@ -17,16 +18,35 @@ public class SchemaConverter {
 	}
 
 	private Table getOutermostTable(ArrayList<Table> tableList) {
-		Table currentTable = tableList.get(0);
+		HashMap<String, Integer> fkCounts = new HashMap<String, Integer>();
+		initializeFKMap(fkCounts, tableList);
+		
 		for (Table table : tableList) {
-			if (table.getForeignKeys().size() > currentTable.getForeignKeys()
-					.size()) {
-				currentTable = table;
+			for (ForeignKey fk : table.getForeignKeys()) {
+				int count = fkCounts.get(fk.getKeyTable().getName()) + 1;
+				fkCounts.put(fk.getKeyTable().getName(), count);
 			}
 		}
+		
+		Table currentTable = tableList.get(0);
+		int foreignKeys = -1;
+		for (Table table : tableList) {
+			if (fkCounts.get(table.getName()) > foreignKeys) {
+				currentTable = table;
+				foreignKeys = fkCounts.get(table.getName());
+			}
+		}
+		System.out.println("Table: " + currentTable.getName());
+		System.out.println("Count: " + foreignKeys);
 		return currentTable;
 	}
 	
+	private void initializeFKMap(HashMap<String, Integer> fkCounts, ArrayList<Table> tableList) {
+		for (Table table : tableList) {
+			fkCounts.put(table.getName(), 0);
+		}
+	}
+
 	public ArrayList<Collection> getCollectionsFromSchema() {
 		ArrayList<Table> leftoverTables = this.database.getTables();
 		ArrayList<Collection> collections = new ArrayList<Collection>();
