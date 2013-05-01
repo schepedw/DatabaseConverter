@@ -60,12 +60,7 @@ public class SchemaConverter {
 	
 	public ArrayList<Table> removeUsedTables(Collection collection, ArrayList<Table> leftoverTables) {
 		String name = collection.getName();
-		Table table = null;
-		for (Table t : leftoverTables) {
-			if (t.getName().equals(name)) {
-				table = t;
-			}
-		}
+		Table table = this.database.getTableByTableName(name);
 		if (table != null) {
 			leftoverTables.remove(table);
 		}
@@ -85,16 +80,12 @@ public class SchemaConverter {
 	}
 	
 	private Collection buildHierarchy(Table table, Collection collection) {
-		for (Column c : table.getColumns()) {
-			if (!table.getForeignKeyColumns().contains(c)) {
-				Field field = new Field(c.getName());
-				collection.addField(field);
-			}
-		}
+		addFieldsToCollection(table, collection);
 		if (table.getForeignKeys().size() == 0) {
 			return collection;
 		} else {
-			for (ForeignKey fk : table.getForeignKeys()) {
+			ArrayList<ForeignKey> foreignKeys = getForeignKeysPointingToTable(table);
+			for (ForeignKey fk : foreignKeys) {
 				if (tableExistsAbove(fk.getKeyTable().getName(), collection)) {
 					return collection;
 				} else {
@@ -107,6 +98,27 @@ public class SchemaConverter {
 			}
 		}
 		return collection;
+	}
+
+	private ArrayList<ForeignKey> getForeignKeysPointingToTable(Table table) {
+		ArrayList<ForeignKey> returnList = new ArrayList<ForeignKey>();
+		for (Table t : database.getTables()) {
+			for (ForeignKey fk : t.getForeignKeys()) {
+				if (fk.getKeyTable().equals(table)) {
+					returnList.add(fk);
+				}
+			}
+		}
+		return returnList;
+	}
+
+	private void addFieldsToCollection(Table table, Collection collection) {
+		for (Column c : table.getColumns()) {
+			if (!table.getForeignKeyColumns().contains(c)) {
+				Field field = new Field(c.getName());
+				collection.addField(field);
+			}
+		}
 	}
 	
 	private boolean tableExistsAbove(String tableName, Collection collection) {

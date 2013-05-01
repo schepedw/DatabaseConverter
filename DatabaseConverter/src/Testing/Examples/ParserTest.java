@@ -28,6 +28,7 @@ public class ParserTest {
 		for (Collection c : collections) {
 			printHierarchyCollection(c, 0);
 		}
+		System.out.println("Collections: " + collections.size());
 	}
 
 	public void printHierarchyDatabase(Database db) {
