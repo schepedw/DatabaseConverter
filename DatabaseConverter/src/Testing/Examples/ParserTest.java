@@ -18,9 +18,11 @@ public class ParserTest {
 
 	@Test
 	public void testGetName() throws Exception {
-		File ex = new File("src/Testing/Examples/SampleNoDataOutput.txt");
+		File ex = new File("src/Testing/Examples/company.sql");
 		SchemaParser dp = new SchemaParser(ex);
 		Database db = dp.parse();
+		
+		//printHierarchyDatabase(db);
 		
 		SchemaConverter sc = new SchemaConverter(db);
 		ArrayList<Collection> collections = sc.getCollectionsFromSchema();
@@ -57,12 +59,12 @@ public class ParserTest {
 		for (int i = 0; i < index; i++) {
 			spaces += "   ";
 		}
-		if (collection.getLowerCollections().size() == 0) {
-			return;
-		}
 		System.out.println(spaces + collection.getName());
 		for (Field f : collection.getFields()) {
 			System.out.println(spaces + "   " + f.getName());
+		}
+		if (collection.getLowerCollections().size() == 0) {
+			return;
 		}
 		for (Collection c1 : collection.getLowerCollections()) {
 			printHierarchyCollection(c1, index + 1);

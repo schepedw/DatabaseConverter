@@ -11,16 +11,15 @@ import RelationalDB.Table;
 public class SchemaConverter {
 	Database database;
 	ArrayList<Collection> collections;
+	HashMap<String, Integer> fkCounts;
 
 	public SchemaConverter(Database database) {
 		this.database = database;
 		this.collections = new ArrayList<Collection>();
+		this.fkCounts = new HashMap<String, Integer>();
 	}
 
 	private Table getOutermostTable(ArrayList<Table> tableList) {
-		HashMap<String, Integer> fkCounts = new HashMap<String, Integer>();
-		initializeFKMap(fkCounts, tableList);
-		
 		for (Table table : tableList) {
 			for (ForeignKey fk : table.getForeignKeys()) {
 				int count = fkCounts.get(fk.getKeyTable().getName()) + 1;
@@ -31,25 +30,24 @@ public class SchemaConverter {
 		Table currentTable = tableList.get(0);
 		int foreignKeys = -1;
 		for (Table table : tableList) {
-			if (fkCounts.get(table.getName()) > foreignKeys) {
+			if (fkCounts.get(table.getName()) >= foreignKeys) {
 				currentTable = table;
 				foreignKeys = fkCounts.get(table.getName());
 			}
 		}
-		System.out.println("Table: " + currentTable.getName());
-		System.out.println("Count: " + foreignKeys);
 		return currentTable;
 	}
 	
-	private void initializeFKMap(HashMap<String, Integer> fkCounts, ArrayList<Table> tableList) {
+	private void initializeFKMap(ArrayList<Table> tableList) {
 		for (Table table : tableList) {
-			fkCounts.put(table.getName(), 0);
+			this.fkCounts.put(table.getName(), 0);
 		}
 	}
 
 	public ArrayList<Collection> getCollectionsFromSchema() {
 		ArrayList<Table> leftoverTables = this.database.getTables();
 		ArrayList<Collection> collections = new ArrayList<Collection>();
+		initializeFKMap(leftoverTables);
 		while (leftoverTables.size() > 0) {
 			Collection collection = createCollectionsHierarchy(leftoverTables);
 			collections.add(collection);
@@ -81,19 +79,19 @@ public class SchemaConverter {
 	
 	private Collection buildHierarchy(Table table, Collection collection) {
 		addFieldsToCollection(table, collection);
-		if (table.getForeignKeys().size() == 0) {
+		ArrayList<ForeignKey> foreignKeys = getForeignKeysPointingToTable(table);
+		if (foreignKeys.size() == 0) {
 			return collection;
 		} else {
-			ArrayList<ForeignKey> foreignKeys = getForeignKeysPointingToTable(table);
 			for (ForeignKey fk : foreignKeys) {
-				if (tableExistsAbove(fk.getKeyTable().getName(), collection)) {
+				if (tableExistsAbove(fk.getTable().getName(), collection)) {
 					return collection;
 				} else {
-					Collection newCollection = new Collection(fk.getKeyTable().getName());
+					Collection newCollection = new Collection(fk.getTable().getName());
 					collection.lowerCollections.add(newCollection);
 					newCollection.setHigherCollection(collection);
 					
-					buildHierarchy(fk.getKeyTable(), newCollection);
+					buildHierarchy(fk.getTable(), newCollection);
 				}
 			}
 		}
@@ -122,7 +120,7 @@ public class SchemaConverter {
 	}
 	
 	private boolean tableExistsAbove(String tableName, Collection collection) {
-		Collection currentCol = collection;
+		Collection currentCol = collection.getHigherCollection();
 		
 		while (currentCol != null) {
 			if (currentCol.getName().equals(tableName)) {

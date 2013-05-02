@@ -29,9 +29,14 @@ public class SchemaParser {
 			line = input.nextLine();	
 			
 			if (line.contains("CREATE TABLE")) {
-				currentTable = addTable(line);
-				if (currentTable != null) {
+				String tableName = line.split("`")[1];
+				currentTable = db.getTableByTableName(tableName);
+				if (currentTable == null) {
+					currentTable = new Table(tableName);
 					db.addTable(currentTable);
+				} else if (currentTable != null) {
+					insideTable = true;
+					continue;
 				}
 				insideTable = true;
 				line = input.nextLine();
@@ -74,7 +79,7 @@ public class SchemaParser {
 			Column column = table.getColumnByName(foreignKey[0]);
 			Table keyTable = db.getTableByTableName(foreignKey[1]);
 			Column keyColumn = keyTable.getColumnByName(foreignKey[2]);
-			table.addForeignKey(column, keyTable, keyColumn);
+			table.addForeignKey(table, column, keyTable, keyColumn);
 			
 			return true;
 		} else if (line.contains("PRIMARY KEY")) {
@@ -105,7 +110,9 @@ public class SchemaParser {
 		} else if (type.equals("String")) {
 			c = new Column(columnName);
 		}
-		table.addColumn(c);
+		if (table.getColumnByName(columnName) == null) {
+			table.addColumn(c);
+		}
 		return c;
 	}
 
@@ -137,15 +144,14 @@ public class SchemaParser {
 		return null;
 	}
 
-	private Table addTable(String line) {
-		String tableName = line.split("`")[1];
-		if (!tableExists(tableName)) {
-			Table table = new Table(tableName);
-			return table;
-		} else { 
-			return db.getTableByTableName(tableName);
-		}
-	}
+//	private Table addTable(String line) {
+//		Table table = null;
+//		String tableName = line.split("`")[1];
+//		if (!tableExists(tableName)) {
+//			table = new Table(tableName);
+//		}
+//		return table;
+//	}
 
 	public String getName() throws FileNotFoundException {
 		Scanner input = new Scanner(this.schema);

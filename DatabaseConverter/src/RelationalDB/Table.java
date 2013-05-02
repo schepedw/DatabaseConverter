@@ -36,18 +36,18 @@ public class Table {
 		return this.foreignKeys;
 	}
 
-	public void addPrimaryKeyByColumnName(String name) throws Exception {
+	public void addPrimaryKeyByColumnName(String name) {
 		Column c = getColumnByName(name);
 		this.primaryKeys.add(c);
 	}
 
-	public Column getColumnByName(String name) throws Exception {
+	public Column getColumnByName(String name) {
 		for (Column c : this.columns) {
 			if (c.getName().equals(name)) {
 				return c;
 			}
 		}
-		throw new Exception("Column " + name + " does not exist in table " + getName());
+		return null;
 	}
 
 	protected Boolean removeColumn(Column c) {
@@ -58,14 +58,14 @@ public class Table {
 		return this.columns.size();
 	}
 
-	public void addForeignKey(Column column, Table keyTable, Column keyColumn) throws Exception {
+	public void addForeignKey(Table table, Column column, Table keyTable, Column keyColumn) throws Exception {
 		ArrayList<ForeignKey> keyList;
 		if (this.foreignKeys == null) {
 			keyList = new ArrayList<ForeignKey>();
 		} else {
 			keyList = this.foreignKeys;
 		}
-		keyList.add(new ForeignKey(column, keyTable, keyColumn));
+		keyList.add(new ForeignKey(table, column, keyTable, keyColumn));
 	}
 
 	protected ArrayList<ForeignKey> getForeignKeys(Table t) {
