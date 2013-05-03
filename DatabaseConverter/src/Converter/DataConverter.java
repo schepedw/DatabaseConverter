@@ -14,7 +14,7 @@ import RelationalDB.Database;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 
-public class DataPuller {
+public class DataConverter {
 
 	private String targetDB;
 	private File schemaOutputFile;
@@ -22,9 +22,9 @@ public class DataPuller {
 	private String user;
 	private String password;
 
-	public DataPuller(String targetDB, String schemaOutputFile, String user,
+	public DataConverter(String targetDB, String user,
 			String password) {
-		this.schemaOutputFile = new File(schemaOutputFile);
+		this.schemaOutputFile = new File(targetDB+"_schemaOutput.txt");
 		this.targetDB = targetDB;
 		this.user = user;
 		this.password = password;
@@ -44,7 +44,7 @@ public class DataPuller {
 
 	public void convertData() {
 		MongoDBConnection conn = new MongoDBConnection("localhost", 27017,
-				"test1");// Got this from my mongo connection, not sure if
+				this.targetDB);// Got this from my mongo connection, not sure if
 							// everyone's is the same.
 		SchemaParser dp = new SchemaParser(this.schemaOutputFile);
 		Database db;
