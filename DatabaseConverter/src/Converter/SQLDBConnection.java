@@ -33,14 +33,21 @@ public class SQLDBConnection {
 			this.conn = null;
 			this.stmt = null;
 			Class.forName(JDBC_DRIVER);
-			conn = DriverManager.getConnection(db_url, user, password);
-			stmt = conn.createStatement();
+			if (user.equals("none"))
+				this.conn = DriverManager.getConnection(this.db_url, user,
+						password);
+
+			else
+				this.conn = DriverManager.getConnection(this.db_url);
+
+			this.stmt = this.conn.createStatement();
 		} catch (Exception e) {
 			throw new SQLException("Could not connect to database");
 		}
 
 	}
-	//probably not needed
+
+	// probably not needed
 	public int executeUpdate(String sql) throws ClassNotFoundException,
 			SQLException {
 		if (!hasOpenStatementAndConnection())
@@ -49,16 +56,16 @@ public class SQLDBConnection {
 
 	}
 
-	public ResultSet executeQuery(String sql)  {
+	public ResultSet executeQuery(String sql) {
 		try {
 			if (!hasOpenStatementAndConnection())
 				reopenConnectionAndStatement();
-				return this.stmt.executeQuery(sql);
-		} catch (ClassNotFoundException | SQLException exception) {
+			return this.stmt.executeQuery(sql);
+		} catch (Exception exception) {
 			exception.printStackTrace();
 			return null;
 		}
-		
+
 	}
 
 	private boolean hasOpenStatementAndConnection() throws SQLException {
@@ -68,7 +75,8 @@ public class SQLDBConnection {
 	private void reopenConnectionAndStatement() throws SQLException,
 			ClassNotFoundException {
 		if (this.conn == null || this.conn.isClosed())
-			this.conn = DriverManager.getConnection(db_url, user, password);
+			this.conn = DriverManager.getConnection(this.db_url, this.user,
+					this.password);
 		if (this.stmt == null || this.stmt.isClosed())
 			this.stmt = this.conn.createStatement();
 	}

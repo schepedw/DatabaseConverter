@@ -43,18 +43,7 @@ public class ParserTest {
 
 	@Test
 	public void printStuff() {
-		MongoDBConnection conn = new MongoDBConnection("localhost", 27017, "test1");//Got this from my mongo connection, not sure if everyone's is the same.
-		DBCollection coll = conn.getCollection("hello");
-		assertNotNull(coll);
-
-		DB db = conn.getDB();
-		BasicDBObject doc = new BasicDBObject("name", "penis")
-				.append("type", "megaPenis").append("count", 45)
-				.append("info", new BasicDBObject("x", 203).append("y", 102));
-
-		coll.insert(doc);
-		DBObject myDoc = coll.findOne();
-		System.out.println(myDoc);
+		
 
 	}
 

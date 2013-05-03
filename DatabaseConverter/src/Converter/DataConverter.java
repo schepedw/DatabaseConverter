@@ -60,6 +60,7 @@ public class DataConverter {
 							new BasicDBObject(), outerTable);
 					coll.insert(doc);
 				}
+				outerTable.close();
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -80,6 +81,7 @@ public class DataConverter {
 				dbo.append(s.getName(),
 						getInsertDocFromCollection(s, dbo, innerTable));
 			}
+			innerTable.close();
 		}
 		return dbo;
 	}
