@@ -2,49 +2,39 @@ package Converter;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
 
 import MongoDB.Collection;
+import MongoDB.Field;
 import MongoDB.SchemaConverter;
 import RelationalDB.Database;
 
-import java.util.Arrays;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 
 public class DataPuller {
 
 	private String targetDB;
 	private File schemaOutputFile;
-	private SQLDBConnection conn;
-	private Statement stmt;
+
+	private String user;
+	private String password;
 
 	public DataPuller(String targetDB, String schemaOutputFile, String user,
 			String password) {
 		this.schemaOutputFile = new File(schemaOutputFile);
 		this.targetDB = targetDB;
-		try {
-			this.conn = new SQLDBConnection(user, password, targetDB);
-		} catch (Exception exception) {
-			// TODO Auto-generated catch-block stub.
-			exception.printStackTrace();
-		}
+		this.user = user;
+		this.password = password;
 	}
 
-	// When we actually convert the data, we may want to pull the schema and
-	// data at the same time
 	protected void pullSchema() {
-		String result = "";
 		try {
-			String s;
 			String pullCommand = "mysqldump -p --no-data --skip-add-drop-table "
 					+ this.targetDB + ">" + this.schemaOutputFile.toString();
-			Process p = Runtime.getRuntime().exec(pullCommand);
+			Runtime.getRuntime().exec(pullCommand);
 		} catch (IOException e) {
 			System.out.println("exception: ");
 			e.printStackTrace();
@@ -53,6 +43,9 @@ public class DataPuller {
 	}
 
 	public void convertData() {
+		MongoDBConnection conn = new MongoDBConnection("localhost", 27017,
+				"test1");// Got this from my mongo connection, not sure if
+							// everyone's is the same.
 		SchemaParser dp = new SchemaParser(this.schemaOutputFile);
 		Database db;
 		try {
@@ -60,39 +53,73 @@ public class DataPuller {
 			SchemaConverter sc = new SchemaConverter(db);
 			ArrayList<Collection> collections = sc.getCollectionsFromSchema();
 			for (Collection c : collections) {
-				pullCollectionDataFromSQL(c,"");//the blank is ok in the upper levels: there's no FKs to match
+				ResultSet outerTable = pullCollectionDataFromSQL(c, "");
+				while (outerTable.next()) {// step through rows one at a time
+					DBCollection coll = conn.getCollection(c.getName());
+					BasicDBObject doc = getInsertDocFromCollection(c,
+							new BasicDBObject(), outerTable);
+					coll.insert(doc);
+				}
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
-
 	}
 
+	private BasicDBObject getInsertDocFromCollection(Collection c,
+			BasicDBObject dbo, ResultSet parentTuple) throws SQLException {
+		for (Field f : c.getFields()) {
+			dbo.append(f.getName(), parentTuple.getString(f.getName()));
+		}
+		for (Collection s : c.getLowerCollections()) {
+			String parentPrimaryKeyVal = parentTuple
+					.getString(getPrimaryKeyName(c));
+			ResultSet innerTable = pullCollectionDataFromSQL(s,
+					parentPrimaryKeyVal);
+			while (innerTable.next()) {
+				dbo.append(s.getName(),
+						getInsertDocFromCollection(s, dbo, innerTable));
+			}
+		}
+		return dbo;
+	}
 
 	private ResultSet pullCollectionDataFromSQL(Collection c, String keyValue) {
 		String sql;
-		if (c.getHigherCollection()==null){
-			sql="Select * from `" + c.getName() + "`";
+		SQLDBConnection SQLconn;
+		try {
+			SQLconn = new SQLDBConnection(this.user, this.password,
+					this.targetDB);
+
+			if (c.getHigherCollection() == null) {
+				sql = "Select * from `" + c.getName() + "`";
+			} else {
+				String myKey = getForeignKeyName(c);
+				sql = "Select * from `" + c.getName() + "` where '" + myKey
+						+ "' = '" + keyValue + "'";
+			}
+			return SQLconn.executeQuery(sql);
+		} catch (Exception exception) {
+			System.err.println("error in pullCollectionData: "
+					+ exception.getMessage());
+			exception.printStackTrace();
+			return null;
 		}
-		else {
-			String myKey=getForeignKeyName(c);
-			sql = "Select * from `" + c.getName() + "` where '"
-				+ myKey + "' = '" + keyValue + "'";//will this work for ints and strings?
-		}
-		return this.conn.executeQuery(sql);
 	}
 
 	// These sql statements may need converted to mySQL
 	private String getPrimaryKeyName(Collection c) {
 		try {
+			SQLDBConnection SQLconn = new SQLDBConnection(this.user,
+					this.password, this.targetDB);
 			String sql = "SELECT k.column_name"
 					+ "FROM information_schema.table_constraints t"
 					+ "JOIN information_schema.key_column_usage k"
 					+ "USING ( constraint_name, table_schema, table_name )"
 					+ "WHERE t.constraint_type =  'PRIMARY KEY'"
 					+ "AND t.table_name =  '" + c.getName() + "'";
-			ResultSet r = this.conn.executeQuery(sql);
-			String parentKey = getValFromResultSet(r).get(0);
+			ResultSet r = SQLconn.executeQuery(sql);
+			String parentKey = convertResultSetToArray(r).get(0);
 			r.close();
 			return parentKey;
 		} catch (Exception exception) {
@@ -104,6 +131,8 @@ public class DataPuller {
 
 	private String getForeignKeyName(Collection c) {
 		try {
+			SQLDBConnection SQLconn = new SQLDBConnection(this.user,
+					this.password, this.targetDB);
 			String sql = "Select * from ( SELECT OBJECT_NAME(f.parent_object_id) AS TableName,"
 					+ " OBJECT_NAME (f.referenced_object_id) AS ReferenceTableName,"
 					+ " COL_NAME(fc.parent_object_id, fc.parent_column_id) AS ColumnName,"
@@ -113,8 +142,8 @@ public class DataPuller {
 					+ "as t1 where t1.ReferenceTableName='"
 					+ c.getName()
 					+ "' and t1.TableName='" + c.getHigherCollection() + "'";
-			ResultSet r = this.conn.executeQuery(sql);
-			String parentKey = getValFromResultSet(r).get(0);
+			ResultSet r = SQLconn.executeQuery(sql);
+			String parentKey = convertResultSetToArray(r).get(0);
 			r.close();
 			return parentKey;
 		} catch (Exception exception) {
@@ -125,7 +154,7 @@ public class DataPuller {
 
 	}
 
-	private ArrayList<String> getValFromResultSet(ResultSet r)
+	private ArrayList<String> convertResultSetToArray(ResultSet r)
 			throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
 		while (r.next()) {
@@ -134,7 +163,5 @@ public class DataPuller {
 		r.close();
 		return result;
 	}
-	
-	
 
 }
