@@ -7,7 +7,7 @@ import java.util.Scanner;
  * 
  * @author schepedw. Created May 2, 2013.
  */
-public class Main {
+public class ConverterMain {
 
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
