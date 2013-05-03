@@ -28,21 +28,19 @@ public class SQLDBConnection {
 		this.user = user;
 		this.password = password;
 		this.db_url = "jdbc:mysql://localhost/" + DBname;
-
 		try {
-			this.conn = null;
-			this.stmt = null;
 			Class.forName(JDBC_DRIVER);
-			if (user.equals("none"))
+			if (!user.equals("none")){
+				System.out.println("The db url: "+ this.db_url);
 				this.conn = DriverManager.getConnection(this.db_url, user,
 						password);
-
+			}
 			else
 				this.conn = DriverManager.getConnection(this.db_url);
-
 			this.stmt = this.conn.createStatement();
-		} catch (Exception e) {
-			throw new SQLException("Could not connect to database");
+			System.out.println(this.stmt+","+this.conn);
+		} catch (ClassNotFoundException | SQLException e) {
+			System.err.println("Exception in constructor: "+ e.getMessage());
 		}
 
 	}

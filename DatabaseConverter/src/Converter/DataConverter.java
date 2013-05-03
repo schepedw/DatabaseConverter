@@ -42,16 +42,12 @@ public class DataConverter {
 		}
 	}
 
-	public void convertData() {
+	public void convertData(ArrayList<Collection> collections) {
 		MongoDBConnection conn = new MongoDBConnection("localhost", 27017,
 				this.targetDB);// Got this from my mongo connection, not sure if
 							// everyone's is the same.
-		SchemaParser dp = new SchemaParser(this.schemaOutputFile);
-		Database db;
+		
 		try {
-			db = dp.parse();
-			SchemaConverter sc = new SchemaConverter(db);
-			ArrayList<Collection> collections = sc.getCollectionsFromSchema();
 			for (Collection c : collections) {
 				ResultSet outerTable = pullCollectionDataFromSQL(c, "");
 				while (outerTable.next()) {// step through rows one at a time
