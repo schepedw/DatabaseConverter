@@ -52,10 +52,13 @@ public class DataConverter {
 				ResultSet outerTable = pullCollectionDataFromSQL(c, "");
 				while (outerTable.next()) {// step through rows one at a time
 					DBCollection coll = conn.getCollection(c.getName());
+					
 					BasicDBObject doc = getInsertDocFromCollection(c,
 							new BasicDBObject(), outerTable);
 					coll.insert(doc);
+					System.out.println("inserted a doc into "+ c.getName());
 				}
+				System.out.println("FINISHED "+ c.getName()+" ENTRIES");
 				outerTable.close();
 			}
 		} catch (Exception exception) {
@@ -67,13 +70,16 @@ public class DataConverter {
 			BasicDBObject dbo, ResultSet parentTuple) throws SQLException {
 		for (Field f : c.getFields()) {
 			dbo.append(f.getName(), parentTuple.getString(f.getName()));
+			
 		}
 		for (Collection s : c.getLowerCollections()) {
 			String parentPrimaryKeyVal = parentTuple
 					.getString(getPrimaryKeyName(c));
+			
 			ResultSet innerTable = pullCollectionDataFromSQL(s,
 					parentPrimaryKeyVal);
 			while (innerTable.next()) {
+				
 				dbo.append(s.getName(),
 						getInsertDocFromCollection(s, dbo, innerTable));
 			}
@@ -93,8 +99,9 @@ public class DataConverter {
 				sql = "Select * from `" + c.getName() + "`";
 			} else {
 				String myKey = getForeignKeyName(c);
-				sql = "Select * from `" + c.getName() + "` where '" + myKey
-						+ "' = '" + keyValue + "'";
+				
+				sql = "Select * from `" + c.getName() + "` where `" + myKey
+						+ "` = '" + keyValue + "'";
 			}
 			return SQLconn.executeQuery(sql);
 		} catch (Exception exception) {
@@ -110,11 +117,11 @@ public class DataConverter {
 		try {
 			SQLDBConnection SQLconn = new SQLDBConnection(this.user,
 					this.password, this.targetDB);
-			String sql = "SELECT k.column_name"
-					+ "FROM information_schema.table_constraints t"
-					+ "JOIN information_schema.key_column_usage k"
-					+ "USING ( constraint_name, table_schema, table_name )"
-					+ "WHERE t.constraint_type =  'PRIMARY KEY'"
+			String sql = "SELECT k.column_name "
+					+ "FROM information_schema.table_constraints t "
+					+ "JOIN information_schema.key_column_usage k "
+					+ "USING ( constraint_name, table_schema, table_name ) "
+					+ "WHERE t.constraint_type =  'PRIMARY KEY' "
 					+ "AND t.table_name =  '" + c.getName() + "'";
 			ResultSet r = SQLconn.executeQuery(sql);
 			String parentKey = convertResultSetToArray(r).get(0);
@@ -130,16 +137,9 @@ public class DataConverter {
 	private String getForeignKeyName(Collection c) {
 		try {
 			SQLDBConnection SQLconn = new SQLDBConnection(this.user,
-					this.password, this.targetDB);
-			String sql = "Select * from ( SELECT OBJECT_NAME(f.parent_object_id) AS TableName,"
-					+ " OBJECT_NAME (f.referenced_object_id) AS ReferenceTableName,"
-					+ " COL_NAME(fc.parent_object_id, fc.parent_column_id) AS ColumnName,"
-					+ " COL_NAME(fc.referenced_object_id, fc.referenced_column_id) AS ReferenceColumnName "
-					+ "FROM sys.foreign_keys AS f INNER JOIN sys.foreign_key_columns AS fc"
-					+ " ON (f.OBJECT_ID = fc.constraint_object_id )) "
-					+ "as t1 where t1.ReferenceTableName='"
-					+ c.getName()
-					+ "' and t1.TableName='" + c.getHigherCollection() + "'";
+					this.password, "INFORMATION_SCHEMA");
+			String sql = "select COLUMN_NAME from KEY_COLUMN_USAGE where "+
+					"REFERENCED_TABLE_NAME = '"+c.getHigherCollection().getName()+"'  and TABLE_NAME='"+c.getName()+"'";
 			ResultSet r = SQLconn.executeQuery(sql);
 			String parentKey = convertResultSetToArray(r).get(0);
 			r.close();

@@ -27,21 +27,22 @@ public class SQLDBConnection {
 			throws SQLException, ClassNotFoundException {
 		this.user = user;
 		this.password = password;
-		this.db_url = "jdbc:mysql://localhost/" + DBname;
+		this.db_url = "jdbc:mysql://localhost:3306/" + DBname;
 		try {
 			Class.forName(JDBC_DRIVER);
 			if (!user.equals("none")){
-				System.out.println("The db url: "+ this.db_url);
 				this.conn = DriverManager.getConnection(this.db_url, user,
 						password);
 			}
-			else
+			else{
 				this.conn = DriverManager.getConnection(this.db_url);
+			}
 			this.stmt = this.conn.createStatement();
-			System.out.println(this.stmt+","+this.conn);
+			
 		} catch (ClassNotFoundException | SQLException e) {
 			System.err.println("Exception in constructor: "+ e.getMessage());
-		}
+		
+		} 
 
 	}
 

@@ -18,11 +18,11 @@ public class ConverterMain {
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		System.out.println("What is the name of the targetDB?");
-		String targetDB ="vcf_analyzer";//input.next();
+		String targetDB ="test";//input.next();
 		System.out
 				.println("What is your username? Enter 'none' if there is none");
-		String user = "vcf_user";//input.next();
-		String password="vcf";
+		String user = "none";//input.next();
+		String password="1234";
 		/*if (!user.equals("none")) {
 			System.out.println("What is your password?");
 			password = input.next();
