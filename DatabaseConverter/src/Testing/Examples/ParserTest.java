@@ -17,10 +17,10 @@ import RelationalDB.Database;
 import RelationalDB.ForeignKey;
 import RelationalDB.Table;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+//import com.mongodb.BasicDBObject;
+//import com.mongodb.DB;
+//import com.mongodb.DBCollection;
+//import com.mongodb.DBObject;
 
 public class ParserTest {
 
@@ -30,7 +30,7 @@ public class ParserTest {
 		SchemaParser dp = new SchemaParser(ex);
 		Database db = dp.parse();
 
-		// printHierarchyDatabase(db);
+		 printHierarchyDatabase(db);
 
 		SchemaConverter sc = new SchemaConverter(db);
 		ArrayList<Collection> collections = sc.getCollectionsFromSchema();
