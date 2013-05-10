@@ -18,15 +18,15 @@ public class ConverterMain {
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		System.out.println("What is the name of the targetDB?");
-		String targetDB ="test";//input.next();
+		String targetDB =input.next();
 		System.out
 				.println("What is your username? Enter 'none' if there is none");
-		String user = "none";//input.next();
-		String password="1234";
-		/*if (!user.equals("none")) {
+		String user = input.next();
+		String password="";
+		if (!user.equals("none")) {
 			System.out.println("What is your password?");
 			password = input.next();
-		}*/
+		}
 		DataConverter puller = new DataConverter(targetDB, user, password);
 		//puller.pullSchema();
 		//SchemaParser dp = new SchemaParser(new File(targetDB+"_schemaOutput.txt"));
@@ -40,8 +40,6 @@ public class ConverterMain {
 		}
 		SchemaConverter sc = new SchemaConverter(db);
 		ArrayList<Collection> collections = sc.getCollectionsFromSchema();
-		
-		
 		puller.convertData(collections);
 
 	}
