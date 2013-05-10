@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import MongoDB.Collection;
-import MongoDB.SchemaConverter;
+import MongoDB.SchemaConverterFlat;
 import RelationalDB.Database;
 
 /**
@@ -28,9 +28,9 @@ public class ConverterMain {
 			password = input.next();
 		}
 		DataConverter puller = new DataConverter(targetDB, user, password);
-		//puller.pullSchema();
-		//SchemaParser dp = new SchemaParser(new File(targetDB+"_schemaOutput.txt"));
-		SchemaParser dp = new SchemaParser(new File("src/Testing/Examples/SampleNoDataOutput.txt"));
+		puller.pullSchema();
+		SchemaParser dp = new SchemaParser(new File(targetDB+"_schemaOutput.txt"));
+		//SchemaParser dp = new SchemaParser(new File("src/Testing/Examples/SampleNoDataOutput.txt"));
 		Database db = null;
 		try {
 			db = dp.parse();
@@ -38,8 +38,8 @@ public class ConverterMain {
 			System.err.println("Error in db.parse "+exception.getMessage());
 			exception.printStackTrace();
 		}
-		SchemaConverter sc = new SchemaConverter(db);
-		ArrayList<Collection> collections = sc.getCollectionsFromSchema();
+		SchemaConverterFlat sc = new SchemaConverterFlat(db);
+		ArrayList<Collection> collections = sc.getCollections();
 		puller.convertData(collections);
 
 	}

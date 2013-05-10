@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import MongoDB.Collection;
 import MongoDB.Field;
-import MongoDB.SchemaConverter;
 import RelationalDB.Database;
 
 import com.mongodb.BasicDBObject;
@@ -56,6 +55,7 @@ public class DataConverter {
 							new BasicDBObject(), table);//get each row out
 					coll.insert(doc);					
 				}
+				System.out.println("done inserting "+c.getName());
 				table.close();
 			}
 			System.out.println("Database converted!");
@@ -66,13 +66,19 @@ public class DataConverter {
 
 	private BasicDBObject getInsertDocFromCollection(Collection c,
 			BasicDBObject dbo, ResultSet parentTuple) throws SQLException {
+		BasicDBObject id=new BasicDBObject();
+		ArrayList<String> primaryKeys=getPrimaryKeys(c);
 		for (Field f : c.getFields()) {
-			if (f.getName().equals(getPrimaryKeyName(c)))
+			if (primaryKeys.size()==1&&primaryKeys.contains(f.getName()))
 				dbo.append("_id", parentTuple.getString(f.getName()));
+			else if (primaryKeys.size()>1&&primaryKeys.contains(f.getName()))
+				id.append(f.getName(),parentTuple.getString(f.getName()));
 			else 
-			dbo.append(f.getName(), parentTuple.getString(f.getName()));
+				dbo.append(f.getName(), parentTuple.getString(f.getName()));
 			
 		}
+		if (primaryKeys.size()>1)
+			dbo.append("_id",id);
 		return dbo;
 	}
 
@@ -93,7 +99,7 @@ public class DataConverter {
 	}
 
 	// These sql statements may need converted to mySQL
-	private String getPrimaryKeyName(Collection c) {
+	private ArrayList<String> getPrimaryKeys(Collection c) {
 		try {
 			SQLDBConnection SQLconn = new SQLDBConnection(this.user,
 					this.password, this.targetDB);
@@ -104,9 +110,8 @@ public class DataConverter {
 					+ "WHERE t.constraint_type =  'PRIMARY KEY' "
 					+ "AND t.table_name =  '" + c.getName() + "'";
 			ResultSet r = SQLconn.executeQuery(sql);
-			String parentKey = convertResultSetToArray(r).get(0);
-			r.close();
-			return parentKey;
+			ArrayList<String> keys = convertResultSetToArray(r);
+			return keys;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return null;
