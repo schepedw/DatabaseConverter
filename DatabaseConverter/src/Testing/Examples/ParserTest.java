@@ -1,26 +1,18 @@
 package Testing.Examples;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Test;
 
-import Converter.MongoDBConnection;
 import Converter.SchemaParser;
 import MongoDB.Collection;
 import MongoDB.Field;
-import MongoDB.SchemaConverter;
+import MongoDB.SchemaConverterFlat;
 import RelationalDB.Column;
 import RelationalDB.Database;
 import RelationalDB.ForeignKey;
 import RelationalDB.Table;
-
-//import com.mongodb.BasicDBObject;
-//import com.mongodb.DB;
-//import com.mongodb.DBCollection;
-//import com.mongodb.DBObject;
 
 public class ParserTest {
 
@@ -30,10 +22,10 @@ public class ParserTest {
 		SchemaParser dp = new SchemaParser(ex);
 		Database db = dp.parse();
 
-		 printHierarchyDatabase(db);
+		//printHierarchyDatabase(db);
 
-		SchemaConverter sc = new SchemaConverter(db);
-		ArrayList<Collection> collections = sc.getCollectionsFromSchema();
+		SchemaConverterFlat sc = new SchemaConverterFlat(db);
+		ArrayList<Collection> collections = sc.getCollections();
 
 		for (Collection c : collections) {
 			printHierarchyCollection(c, 0);
